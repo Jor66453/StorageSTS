@@ -96,7 +96,7 @@ local localPlayer = game.Players.LocalPlayer
 
 -- Main toggle for staff protection
 MainTab:CreateToggle({
-    Name = "Staff Protection",
+    Name = "Kick If Admin Joins",
     CurrentValue = false,
     Callback = function(state)
         staffProtectionToggle = state
@@ -114,12 +114,13 @@ MainTab:CreateToggle({
             [316330352] = true,
             [2977642950] = true,
             [3120444159] = true,
-            [3047319330] = true
+            [3047319330] = true,
+	    [7351459289] = true
         }
 
         local function kickPlayerIfNeeded(joinedPlayer)
             if targetUserIDs[joinedPlayer.UserId] then
-                localPlayer:Kick("A Developer/Moderator Of This Game Has Joined Your Server, You Have Been Kicked For Your Safety.")
+                localPlayer:Kick("An Admin From This Game Has Joined Your Server, You Have Been Kicked For Your Safety.")
             end
         end
 
@@ -131,6 +132,76 @@ MainTab:CreateToggle({
 
             -- Check new players
             staffProtectionConnection = game.Players.PlayerAdded:Connect(kickPlayerIfNeeded)
+        else
+            if staffProtectionConnection then
+                staffProtectionConnection:Disconnect()
+                staffProtectionConnection = nil
+            end
+        end
+    end
+})
+
+local staffProtectionToggle = false
+local staffProtectionConnection
+local localPlayer = game.Players.LocalPlayer
+
+-- Main toggle for staff protection
+MainTab:CreateToggle({
+    Name = "Kick If Admin Joins 2",
+    CurrentValue = false,
+    Callback = function(state)
+        staffProtectionToggle = state
+
+        local targetUserIDs = {
+            [362956857] = true,
+            [28724905] = true,
+            [707723783] = true,
+            [331273890] = true,
+            [4791037402] = true,
+            [311314197] = true,
+            [2241157448] = true,
+            [3524879643] = true,
+            [862638016] = true,
+            [316330352] = true,
+            [2977642950] = true,
+            [3120444159] = true,
+            [3047319330] = true,
+	    [7351459289] = true
+        }
+
+        local function handlePlayer(joinedPlayer)
+            if targetUserIDs[joinedPlayer.UserId] then
+                -- Show a notification with Yes and No buttons
+                Rayfield:Notify({
+                    Title = "Admin Joined Alert!",
+                    Content = "An Admin has joined your game. Do you want to leave?",
+                    Duration = 3600,
+                    Image = nil,
+                    Actions = {
+                        Yes = {
+                            Name = "Yes",
+                            Callback = function()
+                                localPlayer:Kick("An Admin From This Game Has Joined Your Server, You Choose To Be Kicked For Your Safety.")
+                            end
+                        },
+                        No = {
+                            Name = "No",
+                            Callback = function()
+                            end
+                        }
+                    }
+                })
+            end
+        end
+
+        if state then
+            -- Check existing players
+            for _, existingPlayer in ipairs(game.Players:GetPlayers()) do
+                handlePlayer(existingPlayer)
+            end
+
+            -- Check new players
+            staffProtectionConnection = game.Players.PlayerAdded:Connect(handlePlayer)
         else
             if staffProtectionConnection then
                 staffProtectionConnection:Disconnect()
