@@ -1,22 +1,29 @@
 -- StorageSTS
 
+local correctGameId = 1022605215
+local currentGameId = game.PlaceId
+
+if currentGameId == correctGameId then
+
+print("Loading..")
+wait(1)
 -- Load Rayfield library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create the main window
 local Window = Rayfield:CreateWindow({
-    Name = "SURVIVE THE SLASHER HUB V3",
+    Name = "SURVIVE THE SLASHER HUB",
     LoadingTitle = "Survive The Slasher",
     LoadingSubtitle = "By Jor",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil,
-        FileName = "SURVIVE THE SLASHER HUB V3"
+        FileName = "SURVIVE THE SLASHER HUB"
     },
     Discord = {
         Enabled = true,
         Invite = "H66dDfrS4Q",
-        RememberJoins = true 
+        RememberJoins = false 
     },
     KeySystem = true,  -- Enable the key system
     KeySettings = {
@@ -1456,3 +1463,7 @@ GameTab:CreateButton({
         end
     end
 })
+
+elseif currentGameId ~= correctGameId then
+    game.Players.LocalPlayer:Kick("Wrong Game. Use Script In Survive The Slasher.")
+end
