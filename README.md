@@ -5,8 +5,9 @@ local currentGameId = game.PlaceId
 
 if currentGameId == correctGameId then
 
-print("Loading..")
-wait(1)
+print("Survive The Slasher Script: Loading..")
+wait(3)
+print("Loaded!")
 -- Load Rayfield library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
