@@ -1,15 +1,13 @@
 -- StorageSTS
 
--- updated
-
 local correctGameId = 1022605215
 local currentGameId = game.PlaceId
 
 if currentGameId == correctGameId then
 
 print("Survive The Slasher Script: Loading..")
-wait(3)
 print("Loaded!")
+
 -- Load Rayfield library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -55,7 +53,7 @@ Rayfield:Notify({
     Image = nil,
     Actions = {
         Ignore = {
-            Name = "Dismiss",
+            Name = "Close",
             Callback = function() end
         }
     }
@@ -90,156 +88,7 @@ coroutine.resume(Rejoin)
     end
 })
 
-local staffProtectionToggle = false
-local staffProtectionConnection
-local localPlayer = game.Players.LocalPlayer
-
--- Main toggle for staff protection
-MainTab:CreateToggle({
-    Name = "Kick If Admin Joins",
-    CurrentValue = false,
-    Callback = function(state)
-        staffProtectionToggle = state
-
-        local targetUserIDs = {
-            [362956857] = true,
-            [28724905] = true,
-            [707723783] = true,
-            [331273890] = true,
-            [4791037402] = true,
-            [311314197] = true,
-            [2241157448] = true,
-            [3524879643] = true,
-            [862638016] = true,
-            [316330352] = true,
-            [2977642950] = true,
-            [3120444159] = true,
-            [3047319330] = true,
-	    [7351459289] = true
-        }
-
-        local function kickPlayerIfNeeded(joinedPlayer)
-            if targetUserIDs[joinedPlayer.UserId] then
-                localPlayer:Kick("An Admin From This Game Has Joined Your Server, You Have Been Kicked For Your Safety.")
-            end
-        end
-
-        if state then
-            -- Check existing players
-            for _, existingPlayer in ipairs(game.Players:GetPlayers()) do
-                kickPlayerIfNeeded(existingPlayer)
-            end
-
-            -- Check new players
-            staffProtectionConnection = game.Players.PlayerAdded:Connect(kickPlayerIfNeeded)
-        else
-            if staffProtectionConnection then
-                staffProtectionConnection:Disconnect()
-                staffProtectionConnection = nil
-            end
-        end
-    end
-})
-
-local staffProtectionToggle = false
-local staffProtectionConnection
-local localPlayer = game.Players.LocalPlayer
-
--- Main toggle for staff protection
-MainTab:CreateToggle({
-    Name = "Kick If Admin Joins 2",
-    CurrentValue = false,
-    Callback = function(state)
-        staffProtectionToggle = state
-
-        local targetUserIDs = {
-            [362956857] = true,
-            [28724905] = true,
-            [707723783] = true,
-            [331273890] = true,
-            [4791037402] = true,
-            [311314197] = true,
-            [2241157448] = true,
-            [3524879643] = true,
-            [862638016] = true,
-            [316330352] = true,
-            [2977642950] = true,
-            [3120444159] = true,
-            [3047319330] = true,
-	    [7351459289] = true
-        }
-
-        local function handlePlayer(joinedPlayer)
-            if targetUserIDs[joinedPlayer.UserId] then
-                -- Show a notification with Yes and No buttons
-                Rayfield:Notify({
-                    Title = "Admin Joined Alert!",
-                    Content = "An Admin has joined your game. Do you want to leave?",
-                    Duration = 3600,
-                    Image = nil,
-                    Actions = {
-                        Yes = {
-                            Name = "Yes",
-                            Callback = function()
-                                localPlayer:Kick("An Admin From This Game Has Joined Your Server, You Choose To Be Kicked For Your Safety.")
-                            end
-                        },
-                        No = {
-                            Name = "No",
-                            Callback = function()
-                            end
-                        }
-                    }
-                })
-            end
-        end
-
-        if state then
-            -- Check existing players
-            for _, existingPlayer in ipairs(game.Players:GetPlayers()) do
-                handlePlayer(existingPlayer)
-            end
-
-            -- Check new players
-            staffProtectionConnection = game.Players.PlayerAdded:Connect(handlePlayer)
-        else
-            if staffProtectionConnection then
-                staffProtectionConnection:Disconnect()
-                staffProtectionConnection = nil
-            end
-        end
-    end
-})
-
-local antiKickConnection
-
-MainTab:CreateToggle({
-    Name = "Idle-Mode",
-    Callback = function(state)
-        if state then
-            -- Activate Anti-Kick
-            antiKickConnection = game:GetService("Players").LocalPlayer.Idled:Connect(function()
-                local VirtualUser = game:GetService("VirtualUser")
-                VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-                wait(1)
-                VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            end)
-        else
-            -- Deactivate Anti-Kick
-            if antiKickConnection then
-                antiKickConnection:Disconnect()
-                antiKickConnection = nil
-            end
-        end
-    end
-})
-
-MainTab:CreateButton({
-    Name = "Infinite yield",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-        end
-})
+MainTab:CreateSection("Local")
 
 local infjToggle = false
 local localPlayer = game.Players.LocalPlayer
@@ -409,6 +258,40 @@ MainTab:CreateButton({
     end
 })
 
+MainTab:CreateSection("Extra")
+
+local antiKickConnection
+
+MainTab:CreateToggle({
+    Name = "Idle-Mode",
+    Callback = function(state)
+        if state then
+            -- Activate Anti-Kick
+            antiKickConnection = game:GetService("Players").LocalPlayer.Idled:Connect(function()
+                local VirtualUser = game:GetService("VirtualUser")
+                VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                wait(1)
+                VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            end)
+        else
+            -- Deactivate Anti-Kick
+            if antiKickConnection then
+                antiKickConnection:Disconnect()
+                antiKickConnection = nil
+            end
+        end
+    end
+})
+
+MainTab:CreateParagraph({Title = "", Content = "Idle-Mode: Prevents You From Being Kicked Off The Game After 20 Minutes."}) 
+
+MainTab:CreateButton({
+    Name = "Infinite yield",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        end
+})
+
 MainTab:CreateToggle({
     Name = "Spy Private Messages",
     Default = false,
@@ -474,6 +357,133 @@ MainTab:CreateToggle({
         chatFrame.ChatBarParentFrame.Position = chatFrame.ChatChannelParentFrame.Position + UDim2.new(0, 0, chatFrame.ChatChannelParentFrame.Size.Y.Scale, chatFrame.ChatChannelParentFrame.Size.Y.Offset)
     end
 })
+
+MainTab:CreateSection("Protection")
+
+local staffProtectionToggle = false
+local staffProtectionConnection
+local localPlayer = game.Players.LocalPlayer
+
+-- Main toggle for staff protection
+MainTab:CreateToggle({
+    Name = "Kick If Admin Joins",
+    CurrentValue = false,
+    Callback = function(state)
+        staffProtectionToggle = state
+
+        local targetUserIDs = {
+            [362956857] = true,
+            [28724905] = true,
+            [707723783] = true,
+            [331273890] = true,
+            [4791037402] = true,
+            [311314197] = true,
+            [2241157448] = true,
+            [3524879643] = true,
+            [862638016] = true,
+            [316330352] = true,
+            [2977642950] = true,
+            [3120444159] = true,
+            [3047319330] = true
+        }
+
+        local function kickPlayerIfNeeded(joinedPlayer)
+            if targetUserIDs[joinedPlayer.UserId] then
+                localPlayer:Kick("An Admin From This Game Has Joined Your Server, You Have Been Kicked For Your Safety.")
+            end
+        end
+
+        if state then
+            -- Check existing players
+            for _, existingPlayer in ipairs(game.Players:GetPlayers()) do
+                kickPlayerIfNeeded(existingPlayer)
+            end
+
+            -- Check new players
+            staffProtectionConnection = game.Players.PlayerAdded:Connect(kickPlayerIfNeeded)
+        else
+            if staffProtectionConnection then
+                staffProtectionConnection:Disconnect()
+                staffProtectionConnection = nil
+            end
+        end
+    end
+})
+
+MainTab:CreateParagraph({Title = "", Content = "Kick If Admin Joins: Automatically Kicks You If Admin Joins."})
+
+local staffProtectionToggle = false
+local staffProtectionConnection
+local localPlayer = game.Players.LocalPlayer
+
+-- Main toggle for staff protection
+MainTab:CreateToggle({
+    Name = "Kick If Admin Joins 2",
+    CurrentValue = false,
+    Callback = function(state)
+        staffProtectionToggle = state
+
+        local targetUserIDs = {
+            [362956857] = true,
+            [28724905] = true,
+            [707723783] = true,
+            [331273890] = true,
+            [4791037402] = true,
+            [311314197] = true,
+            [2241157448] = true,
+            [3524879643] = true,
+            [862638016] = true,
+            [316330352] = true,
+            [2977642950] = true,
+            [3120444159] = true,
+            [3047319330] = true
+        }
+
+        local function handlePlayer(joinedPlayer)
+            if targetUserIDs[joinedPlayer.UserId] then
+                -- Show a notification with Yes and No buttons
+                Rayfield:Notify({
+                    Title = "Admin Joined Alert!",
+                    Content = "An Admin has joined your game. Do you want to leave?",
+                    Duration = 3600,
+                    Image = nil,
+                    Actions = {
+                        Yes = {
+                            Name = "Yes",
+                            Callback = function()
+                                localPlayer:Kick("An Admin From This Game Has Joined Your Server, You Choose To Be Kicked For Your Safety.")
+                            end
+                        },
+                        No = {
+                            Name = "No",
+                            Callback = function()
+                            end
+                        }
+                    }
+                })
+            end
+        end
+
+        if state then
+            -- Check existing players
+            for _, existingPlayer in ipairs(game.Players:GetPlayers()) do
+                handlePlayer(existingPlayer)
+            end
+
+            -- Check new players
+            staffProtectionConnection = game.Players.PlayerAdded:Connect(handlePlayer)
+        else
+            if staffProtectionConnection then
+                staffProtectionConnection:Disconnect()
+                staffProtectionConnection = nil
+            end
+        end
+    end
+})
+
+MainTab:CreateParagraph({Title = "", Content = "Kick If Admin Joins 2: Alerts You And Gives Option To Leave If Admin Joins."})
+
+ESTab:CreateSection("ESP")
 
 local espToggle = false
 local espConnection
@@ -779,6 +789,8 @@ ESTab:CreateToggle({
         end
     end
 })
+
+SurviTab:CreateSection("Survivor Perks")
 
 local seslreek = SurviTab:CreateButton({
     Name = "Spectate Slasher",
@@ -1203,12 +1215,16 @@ SurviTab:CreateToggle({
     end
 })
 
+SlrTab:CreateSection("Slasher Perks")
+
 SlrTab:CreateButton({
     Name = "Click For More!",
     Callback = function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ProjectpopCat/ywxoscripts/main/STS.lua"))()
     end
 })
+
+ExtrTab:CreateSection("TP")
 
 ExtrTab:CreateButton({
     Name = "Teleport To Lobby",
@@ -1260,6 +1276,8 @@ ExtrTab:CreateButton({
         end
     end
 })
+
+ExtrTab:CreateParagraph({Title = "", Content = "Teleport To VIP Club: You Must Go To The Game Tab And Unlock The Vip Club For This To Work."})
 
 ExtrTab:CreateButton({
     Name = "Teleport To Slasher",
@@ -1371,6 +1389,8 @@ ExtrTab:CreateButton({
     end
 })
 
+ExtrTab:CreateParagraph({Title = "", Content = "Teleport To Random Player (Lobby): Teleports You To Players That Are JUST in the lobby."})
+
 ExtrTab:CreateButton({
     Name = "Teleport To Slasher Spawn",
     Callback = function()
@@ -1427,6 +1447,8 @@ ExtrTab:CreateToggle({
     end
 })
 
+GameTab:CreateSection("Game")
+
 GameTab:CreateButton({
     Name = "Remove Barriers (Lobby)",
     Callback = function()
@@ -1455,6 +1477,8 @@ GameTab:CreateButton({
     end
 })
 
+GameTab:CreateParagraph({Title = "", Content = "Remove Barriers (Lobby): Removes All Barriers In The LOBBY Only."})
+
 GameTab:CreateButton({
     Name = "Remove Barriers (Current Map)",
     Callback = function()
@@ -1480,6 +1504,8 @@ GameTab:CreateButton({
         end
     end
 })
+
+GameTab:CreateParagraph({Title = "", Content = "Remove Barriers (Current Map): Removes All Barriers In The CURRENT Map Only."})
 
 local collectCoinsToggle = false
 local runService = game:GetService("RunService")
@@ -1543,31 +1569,7 @@ GameTab:CreateButton({
     Callback = unlockVIPClub,
 })
 
--- You can add more code below this comment
--- ...
-
-
 elseif currentGameId ~= correctGameId then
-    Rayfield:Notify({
-        Title = "Wrong Game",
-        Content = "Wrong game. Script will NOT load. Go to Survive The Slasher.",
-        Duration = 3600,
-        Image = nil,
-        Actions = {
-            TPtogame = {
-                Name = "Go To Survive The Slasher",
-                Callback = function()
-                    -- Teleport the player to the game with ID 1022605215
-                    local TeleportService = game:GetService("TeleportService")
-                    TeleportService:Teleport(1022605215, game.Players.LocalPlayer)
-                end
-            },
-            Stay = {
-                Name = "Stay Here",
-                Callback = function()
-                    -- Do nothing, stay in the current game
-                end
-            }
-        }
-    })
+    local TeleportService = game:GetService("TeleportService")
+    TeleportService:Teleport(1022605215, game.Players.LocalPlayer)
 end
