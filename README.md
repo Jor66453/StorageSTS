@@ -1484,20 +1484,29 @@ GameTab:CreateButton({
     Callback = function()
         local workspace = game:GetService("Workspace")
         local currentMap = workspace:FindFirstChild("CurrentMap")
+        local invisWalls = nil
 
         if currentMap then
+            -- First search in the 'Other' folder
             local otherFolder = currentMap:FindFirstChild("Other")
-            local extraModel = currentMap:FindFirstChild("Extra")
-            local invisWalls = nil
-
             if otherFolder then
                 invisWalls = otherFolder:FindFirstChild("InvisWalls")
             end
 
-            if not invisWalls and extraModel and extraModel:IsA("Model") then
-                invisWalls = extraModel:FindFirstChild("InvisWalls")
+            -- If not found, search in the 'Extra' model
+            if not invisWalls then
+                local extraModel = currentMap:FindFirstChild("Extra")
+                if extraModel and extraModel:IsA("Model") then
+                    invisWalls = extraModel:FindFirstChild("InvisWalls")
+                end
             end
 
+            -- If still not found, search directly in 'CurrentMap'
+            if not invisWalls then
+                invisWalls = currentMap:FindFirstChild("InvisWalls")
+            end
+
+            -- If found, destroy the model
             if invisWalls and invisWalls:IsA("Model") then
                 invisWalls:Destroy()
             end
