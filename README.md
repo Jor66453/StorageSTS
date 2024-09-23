@@ -1541,7 +1541,11 @@ GameTab:CreateToggle({
                 local coins = coinsModel:GetChildren()
                 for _, coin in pairs(coins) do
                     if coin:IsA("BasePart") and coin.Name == "Coin" then
+                        local originalPosition = coin.Position
+                        coin.CFrame = hrp.CFrame -- Teleport coin to player
                         simulateTouch(coin)
+                        wait(0.01) -- Small delay for movement back and forth
+                        coin.CFrame = CFrame.new(originalPosition) -- Return coin to original position
                     end
                 end
             end
@@ -1550,7 +1554,6 @@ GameTab:CreateToggle({
         if collectCoinsToggle and not connection then
             connection = runService.Heartbeat:Connect(function()
                 collectCoins()
-                wait(0.05) -- Short delay to prevent crashes and optimize performance
             end)
         elseif not collectCoinsToggle and connection then
             connection:Disconnect()
@@ -1558,7 +1561,6 @@ GameTab:CreateToggle({
         end
     end
 })
-
 
 -- Define a function for better organization
 local function unlockVIPClub()
