@@ -1527,11 +1527,13 @@ GameTab:CreateToggle({
 
         local player = game.Players.LocalPlayer
 
+        -- Function to simulate touch on the coin
         local function simulateTouch(coin)
-            firetouchinterest(player.Character.HumanoidRootPart, coin, 0)
-            firetouchinterest(player.Character.HumanoidRootPart, coin, 1)
+            firetouchinterest(player.Character.HumanoidRootPart, coin, 0) -- Simulate touch start
+            firetouchinterest(player.Character.HumanoidRootPart, coin, 1) -- Simulate touch end
         end
 
+        -- Function to collect coins
         local function collectCoins()
             local character = player.Character or player.CharacterAdded:Wait()
             local hrp = character:WaitForChild("HumanoidRootPart")
@@ -1541,19 +1543,19 @@ GameTab:CreateToggle({
                 local coins = coinsModel:GetChildren()
                 for _, coin in pairs(coins) do
                     if coin:IsA("BasePart") and coin.Name == "Coin" then
-                        local originalPosition = coin.Position
-                        coin.CFrame = hrp.CFrame -- Teleport coin to player
-                        simulateTouch(coin)
-                        wait(0.01) -- Small delay for movement back and forth
-                        coin.CFrame = CFrame.new(originalPosition) -- Return coin to original position
+                        -- Bring the coin to the player's character (HumanoidRootPart)
+                        coin.CFrame = hrp.CFrame * CFrame.new(0, 0, -5) -- Move the coin near the player
+                        simulateTouch(coin) -- Simulate touch while the coin is near the player
                     end
                 end
             end
         end
 
+        -- Toggle collection logic
         if collectCoinsToggle and not connection then
             connection = runService.Heartbeat:Connect(function()
                 collectCoins()
+                wait(0.05) -- Short delay to prevent crashes and optimize performance
             end)
         elseif not collectCoinsToggle and connection then
             connection:Disconnect()
