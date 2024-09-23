@@ -1524,6 +1524,7 @@ GameTab:CreateToggle({
     end
 })
 
+
 GameTab:CreateButton({
     Name = "Unlock VIP Club",
     Callback = function()
@@ -1538,28 +1539,41 @@ GameTab:CreateButton({
     end
 })
 
-elseif currentGameId ~= correctGameId then
-    -- Show a notification with Yes and No buttons
-    Rayfield:Notify({
-        Title = "Wrong Game",
-        Content = "Wrong game. Script will NOT load. Go to Survive The Slasher.",
-        Duration = 3600,
-        Image = nil,
-        Actions = {
-            TPtogame = {
-                Name = "Go To Survive The Slasher",
-                Callback = function()
-                    -- Teleport the player to the game with ID 1022605215
-                    local TeleportService = game:GetService("TeleportService")
-                    TeleportService:Teleport(1022605215, game.Players.LocalPlayer)
-                end
-            },
-            Stay = {
-                Name = "Stay Here",
-                Callback = function()
-                    -- Do nothing, stay in the current game
-                end
-            }
-        }
-    })
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+if not Rayfield then
+    warn("Rayfield failed to load!")
+else
+    print("Rayfield loaded successfully.")
 end
+
+if currentGameId ~= correctGameId then
+    -- Show a notification with Yes and No buttons
+    if Rayfield and Rayfield.Notify then
+        Rayfield:Notify({
+            Title = "Wrong Game",
+            Content = "Wrong game. Script will NOT load. Go to Survive The Slasher.",
+            Duration = 3600,
+            Image = nil,
+            Actions = {
+                TPtogame = {
+                    Name = "Go To Survive The Slasher",
+                    Callback = function()
+                        -- Teleport the player to the game with ID 1022605215
+                        local TeleportService = game:GetService("TeleportService")
+                        TeleportService:Teleport(1022605215, game.Players.LocalPlayer)
+                    end
+                },
+                Stay = {
+                    Name = "Stay Here",
+                    Callback = function()
+                        -- Do nothing, stay in the current game
+                    end
+                }
+            }
+        })
+    else
+        warn("Rayfield or Notify function is nil, skipping notification.")
+    end
+end
+
