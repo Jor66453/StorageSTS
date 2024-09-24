@@ -1041,6 +1041,13 @@ SurviTab:CreateButton({
             mouse1click()
         end
 
+        -- Function to aim at the target by moving the mouse
+        local function aimAt(target)
+            local targetPosition = target.Position
+            local screenPos = workspace.CurrentCamera:WorldToScreenPoint(targetPosition)
+            mousemoveabs(screenPos.X, screenPos.Y) -- Move mouse to target position on screen
+        end
+
         -- Find a player with the correct walkspeed
         local function findTarget()
             for _, targetPlayer in pairs(game.Players:GetPlayers()) do
@@ -1060,7 +1067,7 @@ SurviTab:CreateButton({
             if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
                 local target = targetPlayer.Character.HumanoidRootPart
                 teleportBehind(target) -- Teleport behind target
-                mouse.Hit = target.CFrame -- Aim at the target
+                aimAt(target) -- Aim at the target
                 simulateClick() -- Simulate clicking
                 
                 -- Check target health to stop when dead
