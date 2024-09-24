@@ -1015,6 +1015,64 @@ SurviTab:CreateButton({
     end
 })
 
+SurviTab:CreateButton({
+    Name = "Kill Slasher (ONLY BEAST MODE)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local mouse = player:GetMouse()
+        
+        -- Function to get the walkspeed of a target
+        local function getWalkSpeed(target)
+            if target and target:FindFirstChild("Humanoid") then
+                return target.Humanoid.WalkSpeed
+            end
+            return nil
+        end
+
+        -- Function to teleport behind the target
+        local function teleportBehind(target)
+            local distance = 5 -- Medium distance behind
+            local behindPosition = target.Position - (target.CFrame.LookVector * distance)
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(behindPosition)
+        end
+
+        -- Function to simulate clicks
+        local function simulateClick()
+            mouse1click()
+        end
+
+        -- Find a player with the correct walkspeed
+        local function findTarget()
+            for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+                if targetPlayer ~= player and targetPlayer.Character then
+                    local walkspeed = getWalkSpeed(targetPlayer.Character)
+                    if walkspeed == 20 or walkspeed == 22.5 then
+                        return targetPlayer
+                    end
+                end
+            end
+            return nil
+        end
+
+        -- Main loop until the target is dead
+        while true do
+            local targetPlayer = findTarget()
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+                local target = targetPlayer.Character.HumanoidRootPart
+                teleportBehind(target) -- Teleport behind target
+                mouse.Hit = target.CFrame -- Aim at the target
+                simulateClick() -- Simulate clicking
+                
+                -- Check target health to stop when dead
+                if targetPlayer.Character.Humanoid.Health <= 0 then
+                    break
+                end
+            end
+            wait(0.1) -- Delay to avoid instant execution
+        end
+    end
+})
+
 local toggle = false
 local connection
 local PseudoAnchor
