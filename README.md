@@ -13,8 +13,8 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create the main window
 local Window = Rayfield:CreateWindow({
-    Name = "SURVIVE THE SLASHER HUB",
-    LoadingTitle = "Survive The Slasher",
+    Name = "SURVIVE THE SLASHER HUB V4",
+    LoadingTitle = "Survive The Slasher V4",
     LoadingSubtitle = "By Jor",
     ConfigurationSaving = {
         Enabled = true,
@@ -188,31 +188,6 @@ local function resetTabs(tab)
     for _, button in ipairs(tab:GetChildren()) do
         if button:IsA("GuiButton") then
             button:Destroy()
-        end
-    end
-end
-
-local function handleSpeedChange(speed)
-    local player = game.Players.LocalPlayer
-    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-
-    if humanoid then
-        if speed == 20 or speed == 22.5 then
-            resetTabs(SurviTab)
-            Rayfield:Notify({
-                Title = "Warning",
-                Content = "You cannot use Survivor scripts while being slasher!",
-                Duration = 5,
-                Image = nil
-            })
-        elseif speed == 16 then
-            resetTabs(SlrTab)
-            Rayfield:Notify({
-                Title = "Warning",
-                Content = "You cannot use Slasher scripts while being a survivor!",
-                Duration = 5,
-                Image = nil
-            })
         end
     end
 end
@@ -521,6 +496,8 @@ ESTab:CreateToggle({
                         local humanoid = player.Character.Humanoid
                         local walkSpeed = humanoid.WalkSpeed
                         local esp = player.Character:FindFirstChild("ESP")
+                        local head = player.Character:FindFirstChild("Head")
+                        local healthGui = head and head:FindFirstChild("HealthGui")
 
                         -- If ESP does not exist, create it
                         if not esp then
@@ -531,20 +508,27 @@ ESTab:CreateToggle({
                         -- Check if 'esp' was successfully created before modifying it
                         if esp and esp:IsA("Highlight") then
                             local color
-                            if walkSpeed == 16 then
-                                color = Color3.fromRGB(0,255,127)
-                            elseif walkSpeed == 5 then
-                                color = Color3.fromRGB(204, 204, 0)
-                            elseif walkSpeed == 20 or walkSpeed == 22.5 then
-                                color = Color3.fromRGB(255, 0, 0)
-                            elseif walkSpeed == 24 then
-                                color = Color3.fromRGB(0,255,127)
-                            elseif walkSpeed == 25 then
-                                color = Color3.fromRGB(172, 79, 198)
+                            if healthGui then
+                                color = Color3.fromRGB(204, 204, 0) -- Yellow if HealthGui exists
                             else
-                                color = Color3.fromRGB(252, 76, 2)
+                                -- Change color based on WalkSpeed if HealthGui is removed
+                                if walkSpeed == 16 then
+                                    color = Color3.fromRGB(0,255,127)
+                                elseif walkSpeed == 5 then
+                                    color = Color3.fromRGB(204, 204, 0)
+                                elseif walkSpeed == 20 or walkSpeed == 22.5 then
+                                    color = Color3.fromRGB(255, 0, 0)
+                                elseif walkSpeed == 24 then
+                                    color = Color3.fromRGB(0,255,127)
+                                elseif walkSpeed == 25 then
+                                    color = Color3.fromRGB(172, 79, 198)
+                                elseif walkSpeed == 32 then
+                                    color = Color3.fromRGB(252, 76, 2)
+                                else
+                                    color = Color3.fromRGB(1, 50, 32)
+                                end
                             end
-                            esp.FillColor = color -- Adjust fill color based on walk speed
+                            esp.FillColor = color -- Adjust fill color based on healthGui or walk speed
                         end
                     end
                 end
@@ -672,6 +656,8 @@ ESTab:CreateToggle({
                         local humanoid = player.Character.Humanoid
                         local walkSpeed = humanoid.WalkSpeed
                         local esp = player.Character:FindFirstChild("ESP")
+                        local head = player.Character:FindFirstChild("Head")
+                        local healthGui = head and head:FindFirstChild("HealthGui")
 
                         if walkSpeed ~= 20 and walkSpeed ~= 22.5 then
                             if not esp then
@@ -679,20 +665,27 @@ ESTab:CreateToggle({
                             end
 
                             local color
-                            if walkSpeed == 16 then
-                                color = Color3.fromRGB(0,255,127) -- Green for 16
-                            elseif walkSpeed == 5 then
-                                color = Color3.fromRGB(204, 204, 0) -- Yellow for 5
-                            elseif walkSpeed == 24 then
-                                color = Color3.fromRGB(0,255,127) -- Green for 24
-                            elseif walkSpeed == 25 then
-                                color = Color3.fromRGB(172, 79, 198) -- Purple for 25
+                            if healthGui then
+                                color = Color3.fromRGB(204, 204, 0) -- Yellow if HealthGui exists
+                            else
+                                -- Change color based on WalkSpeed if HealthGui is removed
+                                if walkSpeed == 16 then
+                                    color = Color3.fromRGB(0,255,127) -- Green for 16
+                                elseif walkSpeed == 5 then
+                                    color = Color3.fromRGB(204, 204, 0) -- Yellow for 5
+                                elseif walkSpeed == 24 then
+                                    color = Color3.fromRGB(0,255,127) -- Green for 24
+                                elseif walkSpeed == 25 then
+                                    color = Color3.fromRGB(172, 79, 198) -- Purple for 25
+                                elseif walkSpeed == 32 then
+                                    color = Color3.fromRGB(252, 76, 2)
+                                else 
+                                    color = Color3.fromRGB(1, 50, 32)
+                                end
                             end
 
-                            if color then
-                                if esp and esp:IsA("Highlight") then
-                                    esp.FillColor = color
-                                end
+                            if color and esp and esp:IsA("Highlight") then
+                                esp.FillColor = color
                             end
                         else
                             if esp then
@@ -792,46 +785,191 @@ ESTab:CreateToggle({
 
 SurviTab:CreateSection("Survivor Perks")
 
+-- Show a notification
+Rayfield:Notify({
+    Title = "Success!",
+    Content = "Welcome!",
+    Duration = 6.5,
+    Image = nil,
+    Actions = {
+        Ignore = {
+            Name = "Close",
+            Callback = function() end
+        }
+    }
+})
+
+SurviTab:CreateButton({
+    Name = "Heal Me",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        local originalPosition = humanoidRootPart.CFrame.Position
+        local teleporting = true
+
+        -- Check for DisplayGun and other conditions
+        local function checkConditions()
+            if character:FindFirstChild("DisplayGun") then
+                Rayfield:Notify({
+                    Title = "Warning",
+                    Content = "You can't use this in the lobby.",
+                    Duration = 6.5,
+                    Actions = {
+                        Ignore = { Name = "Close", Callback = function() end }
+                    }
+                })
+                return false
+            elseif humanoid.WalkSpeed == 20 or humanoid.WalkSpeed == 22.5 then
+                Rayfield:Notify({
+                    Title = "Warning",
+                    Content = "You can't use this while you are the slasher.",
+                    Duration = 6.5,
+                    Actions = {
+                        Ignore = { Name = "Close", Callback = function() end }
+                    }
+                })
+                return false
+            elseif humanoid.WalkSpeed == 16 then
+                Rayfield:Notify({
+                    Title = "Warning",
+                    Content = "You must be injured by the slasher to use this.",
+                    Duration = 6.5,
+                    Actions = {
+                        Ignore = { Name = "Close", Callback = function() end }
+                    }
+                })
+                return false
+            end
+            return true
+        end
+
+        -- Function to find a valid target player (excluding WalkSpeed 20 and 22.5)
+        local function findValidTargetPlayer()
+            for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+                if otherPlayer ~= player and otherPlayer.Character then
+                    local otherCharacter = otherPlayer.Character
+                    local otherHumanoid = otherCharacter:FindFirstChildOfClass("Humanoid")
+                    local otherHead = otherCharacter:FindFirstChild("Head")
+                    local healthGui = otherHead and otherHead:FindFirstChild("HealthGui")
+                    local displayGun = otherCharacter:FindFirstChild("DisplayGun")
+
+                    -- Only target if they don't have HealthGui, DisplayGun, and WalkSpeed is not 20 or 22.5
+                    if otherHumanoid and not healthGui and not displayGun and (otherHumanoid.WalkSpeed ~= 20 and otherHumanoid.WalkSpeed ~= 22.5) then
+                        return otherPlayer
+                    end
+                end
+            end
+            return nil
+        end
+
+        -- Function to teleport to a valid player
+        local function teleportToTarget(targetPlayer)
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                humanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+            end
+        end
+
+        -- Function to spam teleport to valid targets
+        local function spamTeleport()
+            local targetPlayer = findValidTargetPlayer()
+
+            -- Spam teleport to valid player
+            while teleporting do
+                if targetPlayer then
+                    teleportToTarget(targetPlayer)
+                else
+                    targetPlayer = findValidTargetPlayer() -- Find new target if conditions change
+                end
+
+                -- Check for ForceField
+                if character:FindFirstChild("ForceField") then
+                    teleporting = false
+                    humanoidRootPart.CFrame = CFrame.new(originalPosition) -- Teleport back to original position
+                    break
+                end
+                wait(0.05)
+            end
+        end
+
+        -- Check the conditions before teleporting
+        if checkConditions() then
+            spamTeleport()
+        end
+    end
+})
+
+SurviTab:CreateButton({
+    Name = "Heal A Player",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local RunService = game:GetService("RunService")
+
+        local character = LocalPlayer.Character
+        local originalPosition
+
+        -- Save original position if the character and HumanoidRootPart exist
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            originalPosition = character.HumanoidRootPart.CFrame
+        end
+
+        local function TeleportToPlayer(targetPlayer)
+            local character = LocalPlayer.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local targetCharacter = targetPlayer.Character
+                if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") then
+                    -- Teleport the local player to the target player's position
+                    character.HumanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame
+                end
+            end
+        end
+
+        local function HealSinglePlayer()
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    local targetCharacter = player.Character
+                    if targetCharacter and targetCharacter:FindFirstChild("Head") then
+                        local healthGui = targetCharacter.Head:FindFirstChild("HealthGui")
+                        if healthGui then
+                            -- Teleport loop until HealthGui is gone
+                            while healthGui and healthGui.Parent do
+                                TeleportToPlayer(player)
+                                RunService.Stepped:Wait() -- Wait a frame to prevent script lag
+                                healthGui = targetCharacter.Head:FindFirstChild("HealthGui") -- Update to see if HealthGui is removed
+                            end
+                            -- Once HealthGui is gone, teleport back to original position
+                            if originalPosition and character and character:FindFirstChild("HumanoidRootPart") then
+                                character.HumanoidRootPart.CFrame = originalPosition
+                            end
+                            break -- Exit after teleporting to the first player with HealthGui
+                        end
+                    end
+                end
+            end
+        end
+
+        HealSinglePlayer()
+    end
+})
+
 local seslreek = SurviTab:CreateButton({
     Name = "Spectate Slasher",
     Callback = function()
         local Players = game:GetService("Players")
         local player = Players.LocalPlayer
         local camera = workspace.CurrentCamera
-        local tweenService = game:GetService("TweenService")
+        local spectateActive = true  -- Track if spectate is active
 
-        -- Function to create and display a styled text label
-        local function createStyledTextLabel(text, color)
-            local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-            local textLabel = Instance.new("TextLabel", screenGui)
-            textLabel.Size = UDim2.new(0, 600, 0, 100)
-            textLabel.Position = UDim2.new(0.5, -300, -0.1, 0)  -- Start above the screen
-            textLabel.Text = text
-            textLabel.TextScaled = true
-            textLabel.BackgroundTransparency = 1
-            textLabel.TextColor3 = color
-            textLabel.Font = Enum.Font.GothamBlack
-            textLabel.TextStrokeTransparency = 0
-            textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) -- Black stroke
-
-            -- Slide-in effect
-            local targetPosition = UDim2.new(0.5, -300, 0.5, -50) -- Centered position
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local slideInTween = tweenService:Create(textLabel, tweenInfo, {Position = targetPosition})
-            slideInTween:Play()
-
-            -- Smooth fade-out after a delay
-            slideInTween.Completed:Connect(function()
-                task.delay(4, function()
-                    local fadeOutTween = tweenService:Create(textLabel, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {TextTransparency = 1, TextStrokeTransparency = 1})
-                    fadeOutTween:Play()
-                    fadeOutTween.Completed:Connect(function()
-                        textLabel:Destroy()
-                    end)
-                end)
-            end)
-
-            return textLabel
+        -- Function to reset camera to its original state
+        local function resetCamera()
+            camera.CameraType = Enum.CameraType.Custom
+            camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+            camera.FieldOfView = 70
+            player.CameraMaxZoomDistance = 128
+            player.CameraMinZoomDistance = 0
+            player.CameraMode = Enum.CameraMode.Classic
         end
 
         -- Function to check if there are players with specified walk speeds
@@ -854,438 +992,387 @@ local seslreek = SurviTab:CreateButton({
                     local humanoid = p.Character:FindFirstChild("Humanoid")
                     if table.find(speeds, humanoid.WalkSpeed) then
                         camera.CameraSubject = p.Character
-                        camera.CameraType = Enum.CameraType.Attach
+                        player.CameraMode = Enum.CameraMode.Classic  -- Ensure camera mode is Classic
                         return
                     end
                 end
             end
         end
 
-        -- Function to create a GUI button with a background
-        local function createButton()
+        -- Function to create and handle the exit button
+        local function createExitButton()
             local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
             local button = Instance.new("TextButton", screenGui)
             local uiCorner = Instance.new("UICorner", button)
             
-            button.Size = UDim2.new(0, 250, 0, 75) -- Increased size
-            button.Position = UDim2.new(0.5, -125, 0.8, 0) -- Adjusted position for new size
+            button.Size = UDim2.new(0, 250, 0, 75)
+            button.Position = UDim2.new(0.5, -125, 0.8, 0)
             button.Text = "EXIT"
-            button.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
-            button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+            button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
             button.Font = Enum.Font.GothamBlack
             button.TextScaled = true
             button.TextStrokeTransparency = 0
-            button.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) -- Black stroke
-
-            -- Add rounded corners with a radius of 0.15
+            button.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            
             uiCorner.CornerRadius = UDim.new(0, 15)
 
-            -- Function to move the camera back to normal view
             button.MouseButton1Click:Connect(function()
-                camera.CameraSubject = player.Character.HumanoidRootPart
-                camera.CameraType = Enum.CameraType.Custom
-                screenGui:Destroy()
+                resetCamera()
+                screenGui:Destroy()  -- Destroy the exit button
+                spectateActive = false  -- End spectating
             end)
         end
 
-        -- Check for players with the specified walk speeds before proceeding
+        -- Function to monitor player's death and reset camera
+        local function monitorPlayerDeath()
+            local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.Died:Connect(function()
+                    resetCamera()
+                    -- Destroy the button on death
+                    local playerGui = player:FindFirstChild("PlayerGui")
+                    if playerGui then
+                        local screenGui = playerGui:FindFirstChild("ScreenGui")
+                        if screenGui then
+                            screenGui:Destroy()
+                        end
+                    end
+                    spectateActive = false  -- End spectating
+                end)
+            end
+        end
+
+        -- Function to monitor players' walk speed and reset the camera
+        local function monitorWalkSpeed()
+            while spectateActive do
+                if not hasPlayersWithWalkSpeed({20, 22.5}) then
+                    resetCamera()
+                    -- Destroy the exit button if it's still present
+                    local playerGui = player:FindFirstChild("PlayerGui")
+                    if playerGui then
+                        local screenGui = playerGui:FindFirstChild("ScreenGui")
+                        if screenGui then
+                            screenGui:Destroy()
+                        end
+                    end
+                    break
+                end
+                task.wait(5)  -- Check every 5 seconds
+            end
+        end
+
+        -- Check if there are players with the specified walk speeds
         if hasPlayersWithWalkSpeed({20, 22.5}) then
-            -- Call the function to move the camera
-            moveToPlayerWithWalkSpeed({20, 22.5})
-            
-            -- Call the function to create the button
-            createButton()
+            moveToPlayerWithWalkSpeed({20, 22.5})  -- Move camera to the player
+            createExitButton()  -- Create the exit button
+            task.spawn(monitorWalkSpeed)  -- Start monitoring the players' walk speeds
+            monitorPlayerDeath()  -- Start monitoring player's death
         else
-            -- Show warning message if no player with specified walk speed is found
-            createStyledTextLabel("Warning: Please wait until Slasher is selected or spawns to use this.", Color3.fromRGB(255, 174, 66))
+            -- Show notification if no player is found with the specified walk speeds
+            Rayfield:Notify({
+                Title = "Notice!",
+                Content = "Please Wait Until The Slasher Spawns Or Is Selected To Spectate.",
+                Duration = 6.5,
+                Image = nil,
+                Actions = {
+                    Ignore = {
+                        Name = "Ok",
+                        Callback = function() end
+                    }
+                }
+            })
         end
     end,
 })
 
-SurviTab:CreateButton({
-    Name = "Heal Me",
-    Callback = function()
-        local tweenService = game:GetService("TweenService")
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-        local backpack = player:WaitForChild("Backpack")
-        local originalPosition = humanoidRootPart.Position
-        local targetPlayer = nil
-        local Players = game:GetService("Players")
-        local teleporting = true
-
-        -- Create a styled text label
-        local function createStyledTextLabel(text, color)
-            local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-            local textLabel = Instance.new("TextLabel", screenGui)
-            textLabel.Size = UDim2.new(0, 600, 0, 100)
-            textLabel.Position = UDim2.new(0.5, -300, -0.1, 0)  -- Start above the screen
-            textLabel.Text = text
-            textLabel.TextScaled = true
-            textLabel.BackgroundTransparency = 1
-            textLabel.TextColor3 = color
-            textLabel.Font = Enum.Font.GothamBlack
-            textLabel.TextStrokeTransparency = 0
-            textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) -- Black stroke
-
-            -- Slide-in effect
-            local targetPosition = UDim2.new(0.5, -300, 0.5, -50) -- Centered position
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local slideInTween = tweenService:Create(textLabel, tweenInfo, {Position = targetPosition})
-            slideInTween:Play()
-
-            -- Smooth fade-out after a delay
-            slideInTween.Completed:Connect(function()
-                task.delay(4, function()
-                    local fadeOutTween = tweenService:Create(textLabel, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {TextTransparency = 1, TextStrokeTransparency = 1})
-                    fadeOutTween:Play()
-                    fadeOutTween.Completed:Connect(function()
-                        textLabel:Destroy()
-                    end)
-                end)
-            end)
-
-            return textLabel
-        end
-
-        -- Check for DisplayGun and Speed Shake
-        local function checkConditions()
-            if character:FindFirstChild("DisplayGun") then
-                createStyledTextLabel("Warning: You can't use this in the lobby.", Color3.fromRGB(255, 174, 66))
-                return false
-            elseif (humanoid.WalkSpeed == 20 or humanoid.WalkSpeed == 22.5) and 
-                (not backpack:FindFirstChild("Speed Shake") and not character:FindFirstChild("Speed Shake")) then
-                createStyledTextLabel("Warning: You can't use this while you are slasher.", Color3.fromRGB(255, 174, 66))
-                return false
-            elseif humanoid.WalkSpeed == 16 then
-                createStyledTextLabel("Warning: You must be injured by the slasher to use this.", Color3.fromRGB(255, 174, 66))
-                return false
-            end
-            return true
-        end
-
-        -- Function to find a target player with WalkSpeed of 20 or 22.5
-        local function findTargetPlayer()
-            for _, otherPlayer in pairs(Players:GetPlayers()) do
-                if otherPlayer ~= player and otherPlayer.Character then
-                    local otherHumanoid = otherPlayer.Character:FindFirstChildOfClass("Humanoid")
-                    if otherHumanoid and (otherHumanoid.WalkSpeed == 20 or otherHumanoid.WalkSpeed == 22.5) then
-                        return otherPlayer
-                    end
-                end
-            end
-            return nil
-        end
-
-        -- Function to teleport to the target player
-        local function teleportToTarget()
-            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                humanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-            end
-        end
-
-        -- Function to spam teleport and handle ForceField check
-        local function spamTeleport()
-            targetPlayer = findTargetPlayer()
-
-            -- Spam teleport to player with WalkSpeed 20 or 22.5
-            while teleporting do
-                if targetPlayer then
-                    teleportToTarget()
-                else
-                    targetPlayer = findTargetPlayer()
-                end
-                
-                -- Check for ForceField
-                if character:FindFirstChild("ForceField") then
-                    teleporting = false
-                    humanoidRootPart.CFrame = CFrame.new(originalPosition) -- Teleport back to original position
-                    break
-                end
-                wait(0.05)
-            end
-        end
-
-        -- Check the conditions before teleporting
-        if checkConditions() then
-            spamTeleport()
-        end
-    end
-})
+SurviTab:CreateSection("Fake GamePass Perks")
 
 SurviTab:CreateButton({
-    Name = "Kill Slasher (ONLY BEAST MODE)",
+    Name = "Fake SpeedJuice Simulation",
     Callback = function()
         local player = game.Players.LocalPlayer
-        local mouse = player:GetMouse()
+        local humanoid = player.Character.Humanoid
+        local originalSpeed = humanoid.WalkSpeed
         
-        -- Function to get the walkspeed of a target
-        local function getWalkSpeed(target)
-            if target and target:FindFirstChild("Humanoid") then
-                return target.Humanoid.WalkSpeed
-            end
-            return nil
-        end
-
-        -- Function to teleport behind the target
-        local function teleportBehind(target)
-            local distance = 5 -- Medium distance behind
-            local behindPosition = target.Position - (target.CFrame.LookVector * distance)
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(behindPosition)
-        end
-
-        -- Function to simulate clicks
-        local function simulateClick()
-            mouse1click()
-        end
-
-        -- Function to aim at the target by moving the mouse
-        local function aimAt(target)
-            local targetPosition = target.Position
-            local screenPos = workspace.CurrentCamera:WorldToScreenPoint(targetPosition)
-            mousemoveabs(screenPos.X, screenPos.Y) -- Move mouse to target position on screen
-        end
-
-        -- Find a player with the correct walkspeed
-        local function findTarget()
-            for _, targetPlayer in pairs(game.Players:GetPlayers()) do
-                if targetPlayer ~= player and targetPlayer.Character then
-                    local walkspeed = getWalkSpeed(targetPlayer.Character)
-                    if walkspeed == 20 or walkspeed == 22.5 then
-                        return targetPlayer
-                    end
-                end
-            end
-            return nil
-        end
-
-        -- Main loop until the target is dead
-        while true do
-            local targetPlayer = findTarget()
-            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
-                local target = targetPlayer.Character.HumanoidRootPart
-                teleportBehind(target) -- Teleport behind target
-                aimAt(target) -- Aim at the target
-                simulateClick() -- Simulate clicking
-                
-                -- Check target health to stop when dead
-                if targetPlayer.Character.Humanoid.Health <= 0 then
-                    break
-                end
-            end
-            wait(0.1) -- Delay to avoid instant execution
-        end
+        humanoid.WalkSpeed = 25
+        wait(6.5)
+        humanoid.WalkSpeed = originalSpeed
     end
 })
 
-local toggle = false
-local connection
-local PseudoAnchor
-local CanInvis = true
-local IsInvisible = false
-local FakeCharacter
-local Part
-local Player = game.Players.LocalPlayer
-local RealCharacter = Player.Character or Player.CharacterAdded:Wait()
-local humanoid = RealCharacter:WaitForChild("Humanoid")
-local Transparency = true
-local NoClip = false
-local LightPart -- Part for light to indicate player's position
-local FaceDecal
-local tweenService = game:GetService("TweenService")
-local originalTransparency = {}
+SurviTab:CreateButton({
+    Name = "Fake SpeedShake Simulation",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character.Humanoid
+        local originalSpeed = humanoid.WalkSpeed
+        
+        humanoid.WalkSpeed = 32
+        wait(4.5)
+        humanoid.WalkSpeed = originalSpeed
+    end
+})
 
-SurviTab:CreateToggle({
-    Name = "Invisible (Disables Game Interaction)",
-    CurrentValue = false,
-    Flag = "SlasherToggle",
-    Callback = function(Value)
-        toggle = Value
-
-        local function createStyledTextLabel(text, color)
-            local screenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
-            local textLabel = Instance.new("TextLabel", screenGui)
-            textLabel.Size = UDim2.new(0, 600, 0, 100)
-            textLabel.Position = UDim2.new(0.5, -300, 0.1, 0)
-            textLabel.Text = text
-            textLabel.TextScaled = true
-            textLabel.BackgroundTransparency = 1
-            textLabel.TextColor3 = color
-            textLabel.Font = Enum.Font.GothamBlack
-            textLabel.TextStrokeTransparency = 0
-            textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-
-            local targetPosition = UDim2.new(0.5, -300, 0.5, -50)
-            local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local slideInTween = tweenService:Create(textLabel, tweenInfo, {Position = targetPosition})
-            slideInTween:Play()
-
-            slideInTween.Completed:Connect(function()
-                task.delay(4, function()
-                    local fadeOutTween = tweenService:Create(textLabel, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {TextTransparency = 1, TextStrokeTransparency = 1})
-                    fadeOutTween:Play()
-                    fadeOutTween.Completed:Connect(function()
-                        textLabel:Destroy()
-                    end)
-                end)
-            end)
-        end
-
-        -- Ensure invisibility can still proceed
-        if RealCharacter:FindFirstChild("DisplayGun") then
-            createStyledTextLabel("Warning: You can't become invisible in the lobby, wait until game starts.", Color3.fromRGB(255, 174, 66))
-            return
-        elseif humanoid.WalkSpeed == 20 or humanoid.WalkSpeed == 22.5 then
-            createStyledTextLabel("Warning: You can't become invisible while being slasher, it will glitch.", Color3.fromRGB(255, 174, 66))
-            return
-        end
-
-        -- Initialize the fake character
-        local function setupFakeCharacter()
-            RealCharacter.Archivable = true
-            FakeCharacter = RealCharacter:Clone()
-
-            Part = Instance.new("Part", workspace)
-            Part.Anchored = true
-            Part.Size = Vector3.new(200, 1, 200)
-            Part.CFrame = CFrame.new(0, -500, 0)
-            Part.CanCollide = true
-
-            LightPart = Instance.new("Part", workspace)
-            LightPart.Anchored = true
-            LightPart.CanCollide = false
-            LightPart.Shape = Enum.PartType.Ball
-            LightPart.Size = Vector3.new(5, 5, 5)
-            LightPart.CFrame = RealCharacter.HumanoidRootPart.CFrame
-            local light = Instance.new("PointLight", LightPart)
-            light.Brightness = 2
-            light.Range = 10
-
-            FakeCharacter.Parent = workspace
-            FakeCharacter.HumanoidRootPart.CFrame = Part.CFrame * CFrame.new(0, 5, 0)
-
-            if Transparency then
-                for _, v in pairs(FakeCharacter:GetDescendants()) do
-                    if v:IsA("BasePart") then
-                        v.Transparency = 1
-                    elseif v:IsA("Decal") and v.Name == "face" then
-                        v.Transparency = 1 -- Hide face decal
-                    end
-                end
-            end
-
-            for _, v in pairs(RealCharacter:GetChildren()) do
-                if v:IsA("LocalScript") then
-                    local clone = v:Clone()
-                    clone.Disabled = true
-                    clone.Parent = FakeCharacter
-                end
-            end
-
-            PseudoAnchor = FakeCharacter.HumanoidRootPart
-        end
-
-        -- Toggle invisibility
-        local function Invisible(enable)
-            if enable and not IsInvisible then
-                local StoredCF = RealCharacter.HumanoidRootPart.CFrame
-                RealCharacter.HumanoidRootPart.CFrame = FakeCharacter.HumanoidRootPart.CFrame
-                FakeCharacter.HumanoidRootPart.CFrame = StoredCF
-                RealCharacter.Humanoid:UnequipTools()
-                Player.Character = FakeCharacter
-                workspace.CurrentCamera.CameraSubject = FakeCharacter.Humanoid
-                PseudoAnchor = RealCharacter.HumanoidRootPart
-
-                for _, v in pairs(FakeCharacter:GetChildren()) do
-                    if v:IsA("LocalScript") then
-                        v.Disabled = false
-                    end
-                end
-
-                -- Hide real character's face decal
-                for _, v in pairs(RealCharacter:GetChildren()) do
-                    if v:IsA("Decal") and v.Name == "face" then
-                        FaceDecal = v
-                        v.Transparency = 1
-                    end
-                end
-
-                IsInvisible = true
-            elseif not enable and IsInvisible then
-                local StoredCF = FakeCharacter.HumanoidRootPart.CFrame
-                FakeCharacter.HumanoidRootPart.CFrame = RealCharacter.HumanoidRootPart.CFrame
-                RealCharacter.HumanoidRootPart.CFrame = StoredCF
-
-                FakeCharacter.Humanoid:UnequipTools()
-                Player.Character = RealCharacter
-                workspace.CurrentCamera.CameraSubject = RealCharacter.Humanoid
-                PseudoAnchor = FakeCharacter.HumanoidRootPart
-
-                for _, v in pairs(FakeCharacter:GetChildren()) do
-                    if v:IsA("LocalScript") then
-                        v.Disabled = true
-                    end
-                end
-
-                -- Restore real character's face decal
-                if FaceDecal then
-                    FaceDecal.Transparency = 0
-                end
-
-                IsInvisible = false
-            end
-        end
-
-        if toggle then
-            if not FakeCharacter then
-                setupFakeCharacter()
-            end
-            Invisible(true) -- Enable invisibility
-
-            connection = game:GetService("RunService").RenderStepped:Connect(function()
-                if NoClip and FakeCharacter then
-                    FakeCharacter.Humanoid:ChangeState(11) -- NoClip mode
-                end
-                if PseudoAnchor then
-                    PseudoAnchor.CFrame = Part.CFrame * CFrame.new(0, 5, 0) -- Keep the fake character in place
-                end
-
-                if LightPart and RealCharacter and RealCharacter:FindFirstChild("HumanoidRootPart") then
-                    LightPart.CFrame = RealCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-                end
-            end)
-        else
-            if IsInvisible then
-                Invisible(false) -- Disable invisibility
-            end
-            if FakeCharacter then
-                FakeCharacter:Destroy()
-                FakeCharacter = nil
-            end
-            if Part then
-                Part:Destroy()
-                Part = nil
-            end
-            if LightPart then
-                LightPart:Destroy()
-                LightPart = nil
-            end
-            if connection then
-                connection:Disconnect()
-                connection = nil
-            end
-        end
+SurviTab:CreateButton({
+    Name = "Fake DobuleJump Simulation",
+    Callback = function()
+        local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local character
+local humanoid
+ 
+local canDoubleJump = false
+local hasDoubleJumped = false
+local oldPower
+local time_delay = 0.2
+local jump_multiplier = 1 
+function onJumpRequest()
+	if not character or not humanoid or not character:IsDescendantOf(workspace) or humanoid:GetState() == Enum.HumanoidStateType.Dead then
+		return
+	end
+ 
+	if canDoubleJump and not hasDoubleJumped then
+		hasDoubleJumped = true
+		humanoid.JumpPower = oldPower * jump_multiplier
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end
+ 
+local function characterAdded(new)
+	character = new
+	humanoid = new:WaitForChild("Humanoid")
+	hasDoubleJumped = false
+	canDoubleJump = false
+	oldPower = humanoid.JumpPower
+ 
+	humanoid.StateChanged:connect(function(old, new)
+		if new == Enum.HumanoidStateType.Landed then
+			canDoubleJump = false
+			hasDoubleJumped = false
+			humanoid.JumpPower = oldPower
+		elseif new == Enum.HumanoidStateType.Freefall then
+			wait(time_delay)
+			canDoubleJump = true
+		end
+	end)
+end
+ 
+if player.Character then
+	characterAdded(player.Character)	
+end
+ 
+player.CharacterAdded:connect(characterAdded)
+UIS.JumpRequest:connect(onJumpRequest)
     end
 })
 
 SlrTab:CreateSection("Slasher Perks")
 
+-- Create the button
 SlrTab:CreateButton({
-    Name = "Click For More!",
+    Name = "Slash All",
     Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ProjectpopCat/ywxoscripts/main/STS.lua"))()
+
+        local players = game:GetService("Players")
+        local localPlayer = players.LocalPlayer
+
+        -- Check the player's WalkSpeed
+        local function checkValidWalkSpeed()
+            local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChild("Humanoid")
+            if humanoid then
+                local walkSpeed = humanoid.WalkSpeed
+                return walkSpeed == 20 or walkSpeed == 22.5
+            end
+            return false
+        end
+
+        -- If WalkSpeed is not valid, send notification and stop execution
+        if not checkValidWalkSpeed() then
+            Rayfield:Notify({
+                    Title = "Warning",
+                    Content = "You must be the slasher to use this.",
+                    Duration = 6.5,
+                    Actions = {
+                        Ignore = { Name = "Close", Callback = function() end }
+                    }
+                })
+            return -- Stop the script from running
+        end
+
+        local originalPositions = {}
+
+        -- Equip the only tool in the local player's inventory
+        local function equipOnlyTool()
+            local backpack = localPlayer:WaitForChild("Backpack")
+            local tool = backpack:FindFirstChildOfClass("Tool")
+            if tool then
+                tool.Parent = localPlayer.Character
+            end
+        end
+
+        -- Equip the tool before doing anything else
+        equipOnlyTool()
+
+        -- Check if the player has a tool
+        local function hasTool()
+            local backpack = localPlayer:WaitForChild("Backpack")
+            return backpack:FindFirstChildOfClass("Tool") or (localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Tool"))
+        end
+
+        -- Store the original positions of all players
+        for _, otherPlayer in ipairs(players:GetPlayers()) do
+            if otherPlayer ~= localPlayer and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                originalPositions[otherPlayer] = otherPlayer.Character.HumanoidRootPart.CFrame
+            end
+        end
+
+        -- Bring all players close to the local player
+        local bringConnection
+        bringConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            for _, otherPlayer in ipairs(players:GetPlayers()) do
+                if otherPlayer ~= localPlayer and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    otherPlayer.Character.HumanoidRootPart.CFrame = localPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2)
+                end
+            end
+        end)
+
+        -- Simulate an autoclicker that clicks 2 times per 0.1 seconds
+        local function startAutoClicker()
+            local clickConnection
+            clickConnection = game:GetService("RunService").Heartbeat:Connect(function()
+                for i = 1, 2 do
+                    -- Simulate a click
+                    mouse1click() -- Simulates a left mouse click
+                end
+                wait(0.05) -- Wait to match 2 clicks per 0.1 seconds
+            end)
+
+            -- Continuously check for tool in inventory and stop when no tool is left
+            spawn(function()
+                while hasTool() do
+                    wait(0.1)
+                end
+
+                -- Disconnect autoclicker and stop bringing players once no tool is found
+                if clickConnection then
+                    clickConnection:Disconnect()
+                end
+                if bringConnection then
+                    bringConnection:Disconnect()
+                end
+                Rayfield:Notify({
+                    Title = "Slashed All!",
+                    Content = "All Players Have Been Killed.",
+                    Duration = 5,
+                    Image = nil
+                })
+            end)
+        end
+
+        -- Start the autoclicker
+        startAutoClicker()
+
+    end
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Slasher Vision Button
+local slrbstm = SlrTab:CreateToggle({
+    Name = "Slasher Vision",
+    CurrentValue = false,
+    Flag = "RedVisionToggle",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+
+        if not humanoid then
+            return -- Exit if no humanoid is found
+        end -- end if not humanoid
+
+        if Value then
+            -- Set screen red
+            local redOverlay = Instance.new("ScreenGui", player.PlayerGui)
+            redOverlay.Name = "RedOverlay"
+            redOverlay.IgnoreGuiInset = true
+
+            local redFrame = Instance.new("Frame", redOverlay)
+            redFrame.Size = UDim2.new(1, 0, 1, 0)
+            redFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            redFrame.BackgroundTransparency = 0.7
+        else
+            -- Remove red screen when toggled off
+            if player.PlayerGui:FindFirstChild("RedOverlay") then
+                player.PlayerGui.RedOverlay:Destroy()
+            end -- end if RedOverlay exists
+        end -- end if Value
+    end -- end callback function
+}) -- end CreateToggle for Slasher Vision
+
+SlrTab:CreateSection("Fake GamePass Perks")
+
+SlrTab:CreateButton({
+    Name = "Fake Extra Slasher Speed",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character.Humanoid
+        
+        humanoid.WalkSpeed = 22.5
+    end
+})
+
+SlrTab:CreateButton({
+    Name = "Fake DobuleJump Simulation",
+    Callback = function()
+        local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local character
+local humanoid
+ 
+local canDoubleJump = false
+local hasDoubleJumped = false
+local oldPower
+local time_delay = 0.2
+local jump_multiplier = 1 
+function onJumpRequest()
+	if not character or not humanoid or not character:IsDescendantOf(workspace) or humanoid:GetState() == Enum.HumanoidStateType.Dead then
+		return
+	end
+ 
+	if canDoubleJump and not hasDoubleJumped then
+		hasDoubleJumped = true
+		humanoid.JumpPower = oldPower * jump_multiplier
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end
+ 
+local function characterAdded(new)
+	character = new
+	humanoid = new:WaitForChild("Humanoid")
+	hasDoubleJumped = false
+	canDoubleJump = false
+	oldPower = humanoid.JumpPower
+ 
+	humanoid.StateChanged:connect(function(old, new)
+		if new == Enum.HumanoidStateType.Landed then
+			canDoubleJump = false
+			hasDoubleJumped = false
+			humanoid.JumpPower = oldPower
+		elseif new == Enum.HumanoidStateType.Freefall then
+			wait(time_delay)
+			canDoubleJump = true
+		end
+	end)
+end
+ 
+if player.Character then
+	characterAdded(player.Character)	
+end
+ 
+player.CharacterAdded:connect(characterAdded)
+UIS.JumpRequest:connect(onJumpRequest)
     end
 })
 
@@ -1514,6 +1601,123 @@ ExtrTab:CreateToggle({
 
 GameTab:CreateSection("Game")
 
+local screenGui
+
+GameTab:CreateToggle({
+    Name = "Info",
+    Callback = function(state)
+        if state then
+            -- Create the screen GUI only if it doesn't exist
+            if not screenGui then
+                screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+
+                -- Slasher Label
+                local slasherTextLabel = Instance.new("TextLabel", screenGui)
+                slasherTextLabel.Size = UDim2.new(0, 250, 0, 50)
+                slasherTextLabel.Position = UDim2.new(0, 20, 1, -170)
+                slasherTextLabel.BackgroundTransparency = 1
+                slasherTextLabel.TextSize = 30
+                slasherTextLabel.Font = Enum.Font.GothamBold
+                slasherTextLabel.TextStrokeTransparency = 0.8
+                slasherTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                slasherTextLabel.Text = "Slasher: Waiting..."
+
+                -- Role Label
+                local roleTextLabel = Instance.new("TextLabel", screenGui)
+                roleTextLabel.Size = UDim2.new(0, 250, 0, 50)
+                roleTextLabel.Position = UDim2.new(0, 20, 1, -120)
+                roleTextLabel.BackgroundTransparency = 1
+                roleTextLabel.TextSize = 30
+                roleTextLabel.Font = Enum.Font.GothamBold
+                roleTextLabel.TextStrokeTransparency = 0.8
+                roleTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                roleTextLabel.Text = "Your Role: Waiting..."
+
+                -- Distance Label (moved to the right)
+                local distanceTextLabel = Instance.new("TextLabel", screenGui)
+                distanceTextLabel.Size = UDim2.new(0, 250, 0, 50)
+                distanceTextLabel.Position = UDim2.new(0, 189, 1, -70) -- Closer to the right
+                distanceTextLabel.BackgroundTransparency = 1
+                distanceTextLabel.TextSize = 30
+                distanceTextLabel.Font = Enum.Font.GothamBold
+                distanceTextLabel.TextStrokeTransparency = 0.8
+                distanceTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                distanceTextLabel.Text = "Your Distance From Slasher: Waiting..."
+
+                -- Update Labels Continuously
+                while state do
+                    wait(1)
+
+                    -- Get slasher player
+                    local slasher = nil
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        local character = player.Character
+                        if character and character:FindFirstChild("Humanoid") then
+                            local walkspeed = character.Humanoid.WalkSpeed
+                            if walkspeed == 20 or walkspeed == 22.5 then
+                                slasher = player
+                                break
+                            end
+                        end
+                    end
+
+                    -- Update Slasher Label
+                    if slasher then
+                        slasherTextLabel.Text = "Slasher: " .. slasher.Name
+                        slasherTextLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Red when slasher is found
+                    else
+                        slasherTextLabel.Text = "Slasher: Waiting..."
+                        slasherTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White when waiting
+                    end
+
+                    -- Update Role Label
+                    local localPlayer = game.Players.LocalPlayer
+                    local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChild("Humanoid")
+                    if humanoid then
+                        local walkspeed = humanoid.WalkSpeed
+                        local hasDisplayGun = localPlayer.Character:FindFirstChild("DisplayGun") ~= nil
+                        if walkspeed == 20 or walkspeed == 22.5 then
+                            roleTextLabel.Text = "Your Role: Slasher"
+                            roleTextLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Red for Slasher
+                        elseif hasDisplayGun then
+                            roleTextLabel.Text = "Your Role: Waiting..."
+                        else
+                            roleTextLabel.Text = "Your Role: Survivor"
+                            roleTextLabel.TextColor3 = Color3.fromRGB(0, 255, 0) -- Green for Survivor
+                        end
+                    end
+
+                    -- Update Distance Label
+                    if slasher then
+                        local slasherPos = slasher.Character.HumanoidRootPart.Position
+                        local playerPos = localPlayer.Character.HumanoidRootPart.Position
+                        local distance = (playerPos - slasherPos).Magnitude
+                        if distance <= 50 then
+                            distanceTextLabel.Text = "Your Distance From Slasher: Close (" .. math.floor(distance) .. " studs)"
+                            distanceTextLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Red for close
+                        elseif distance <= 100 then
+                            distanceTextLabel.Text = "Your Distance From Slasher: Away (" .. math.floor(distance) .. " studs)"
+                            distanceTextLabel.TextColor3 = Color3.fromRGB(255, 165, 0) -- Orange for away
+                        else
+                            distanceTextLabel.Text = "Your Distance From Slasher: Far (" .. math.floor(distance) .. " studs)"
+                            distanceTextLabel.TextColor3 = Color3.fromRGB(0, 255, 0) -- Green for far
+                        end
+                    else
+                        distanceTextLabel.Text = "Your Distance From Slasher: Waiting..."
+                        distanceTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White when waiting
+                    end
+                end
+            end
+        else
+            -- Destroy the screen GUI and its labels when toggle is off
+            if screenGui then
+                screenGui:Destroy()
+                screenGui = nil  -- Make sure it can be recreated when toggled back on
+            end
+        end
+    end
+})
+
 GameTab:CreateButton({
     Name = "Remove Barriers (Lobby)",
     Callback = function()
@@ -1581,50 +1785,83 @@ GameTab:CreateButton({
 
 GameTab:CreateParagraph({Title = "", Content = "Remove Barriers (Current Map): Removes All Barriers In The CURRENT Map Only."})
 
-local collectCoinsToggle = false
-local runService = game:GetService("RunService")
-local connection
-
-GameTab:CreateToggle({
+GameTab:CreateButton({
     Name = "Collect All Coins",
-    Callback = function(state)
-        collectCoinsToggle = state
-
+    Callback = function()
         local player = game.Players.LocalPlayer
-
-        -- Function to simulate touch on the coin
-        local function simulateTouch(coin)
-            firetouchinterest(player.Character.HumanoidRootPart, coin, 0) -- Simulate touch start
-            firetouchinterest(player.Character.HumanoidRootPart, coin, 1) -- Simulate touch end
-        end
-
-        -- Function to collect coins
-        local function collectCoins()
-            local character = player.Character or player.CharacterAdded:Wait()
-            local hrp = character:WaitForChild("HumanoidRootPart")
-            local coinsModel = workspace:FindFirstChild("CurrentMap"):FindFirstChild("Coins")
-
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+        local mapFolder = workspace:FindFirstChild("CurrentMap")
+        
+        if mapFolder then
+            local coinsModel = mapFolder:FindFirstChild("Coins")
             if coinsModel then
                 local coins = coinsModel:GetChildren()
-                for _, coin in pairs(coins) do
-                    if coin:IsA("BasePart") and coin.Name == "Coin" then
-                        -- Bring the coin to the player's character (HumanoidRootPart)
-                        coin.CFrame = hrp.CFrame * CFrame.new(0, 0, -5) -- Move the coin near the player
-                        simulateTouch(coin) -- Simulate touch while the coin is near the player
+                
+                local function collectCoin(coin)
+                    if coin:IsA("BasePart") then
+                        coin.CFrame = hrp.CFrame -- Move coin to player
+                        firetouchinterest(coin, hrp, 0)
+                        coin.CFrame = coin.CFrame * CFrame.new(0, 50, 0) -- Move coin back
+                        firetouchinterest(coin, hrp, 1)
                     end
+                end
+                
+                for _, coin in ipairs(coins) do
+                    collectCoin(coin)
                 end
             end
         end
+    end
+})
 
-        -- Toggle collection logic
-        if collectCoinsToggle and not connection then
-            connection = runService.Heartbeat:Connect(function()
-                collectCoins()
-                wait(0.05) -- Short delay to prevent crashes and optimize performance
+GameTab:CreateToggle({
+    Name = "Auto Collect Coins",
+    Default = false,
+    Callback = function(state)
+        toggle = state
+        
+        if toggle and not collecting then
+            collecting = true
+
+            spawn(function()
+                game.Players.LocalPlayer.CharacterAdded:Connect(function()
+                    if toggle then
+                        collecting = false -- Reset collecting after respawn
+                        wait(1) -- Ensure character is fully loaded
+                        toggle = true -- Resume auto collection after respawn
+                        collecting = true -- Re-enable collecting loop
+                    end
+                end)
+
+                while toggle do
+                    local player = game.Players.LocalPlayer
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local hrp = character:WaitForChild("HumanoidRootPart")
+                    local mapFolder = workspace:FindFirstChild("CurrentMap")
+
+                    if mapFolder then
+                        local coinsModel = mapFolder:FindFirstChild("Coins")
+                        if coinsModel then
+                            for _, coin in pairs(coinsModel:GetChildren()) do
+                                if not toggle then break end
+                                if coin:IsA("BasePart") then
+                                    -- Move coin to player
+                                    coin.CFrame = hrp.CFrame
+                                    firetouchinterest(coin, hrp, 0)
+                                    -- Move coin back
+                                    coin.CFrame = coin.CFrame * CFrame.new(0, 50, 0)
+                                    firetouchinterest(coin, hrp, 1)
+                                end
+                            end
+                        end
+                    end
+                    task.wait(0.01) -- Fast loop to minimize delays
+                end
+                collecting = false
             end)
-        elseif not collectCoinsToggle and connection then
-            connection:Disconnect()
-            connection = nil
+        else
+            collecting = false
         end
     end
 })
@@ -1645,6 +1882,26 @@ end
 GameTab:CreateButton({
     Name = "Unlock VIP Club",
     Callback = unlockVIPClub,
+})
+
+-- Create the button
+GameTab:CreateButton({
+    Name = "Remove Traps (Khufu Map)",
+    Callback = function()
+        local currentMap = game.Workspace:FindFirstChild("CurrentMap")
+        if currentMap then
+            local extraModel = currentMap:FindFirstChild("Extra")
+            if extraModel then
+                for _, mesh in pairs(extraModel:GetChildren()) do
+                    if mesh:IsA("Model") and mesh.Name == "Mesh" then
+                        if mesh:FindFirstChild("Sword Stab") then
+                            mesh:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    end
 })
 
 elseif currentGameId ~= correctGameId then
